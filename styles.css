@@ -1,0 +1,22 @@
+html { 
+    background: url(assets/tyler-edlin-fantasy-landscape1.jpg) no-repeat center center fixed; 
+    background-size: cover;
+  }
+
+#title-background {
+    margin: auto;
+    background: rgb(240, 223, 148) url(assets/clipart-border-rustic-16.png);
+    background-size: cover;
+    /* opacity: .8; */
+    height: 160px;
+    width: 400px;
+    padding: 10px;
+}
+
+#title {
+    display: block;
+    margin-top: 5%;
+    margin-left: 3.5%;
+    width: 380px;
+    height: 120px;
+}
