@@ -25,8 +25,22 @@ function addFormListener(){
 
         fetch("http://localhost:3000/users", reqObj)
         .then(resp => resp.json())
-        .then(user => console.log(user))
+        .then(userData => {
+            const rulings = userData.attributes.rulings
+            LOG_IN_FORM.display = "none";
+            if (rulings.length === 0){
+                renderPlayOrCreate(user)
+            }
+            else if (rulings.length > 0){
+                renderGameSesh();
+            }
+
+        })
     })
+}
+
+function renderPlayOrCreate(){
+    
 }
 
 main();
