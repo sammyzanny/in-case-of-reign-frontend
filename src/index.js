@@ -1,8 +1,7 @@
-let CURRENT_USER;
-let COUNTER = 0;
+let CURRENT_USER, COUNTER, CASES, selectedCases, RATING, OPTIONS;
 const LOG_IN_FORM = document.querySelector(".create-user-form");
 const MAIN = document.querySelector("#center-field");
-let CASES;
+
 
 function main(){
     fetchCases();
@@ -31,13 +30,11 @@ function addFormListener(){
         .then(resp => resp.json())
         .then(userData => {
             CURRENT_USER = userData.data;
-            const rulings = userData.data.attributes.rulings;
             renderPlayOrCreate();
-            
-
         })
     })
 }
+
 
 function renderPlayOrCreate(){
     MAIN.innerHTML = `<div class="row">
@@ -48,7 +45,7 @@ function renderPlayOrCreate(){
             </form><br>
         </div>
         <div class="column">
-            <br><br><br><button id="creative-btn">Creative Mode</button>
+            <br><br><br><button id="creative-btn">Create New Case</button>
         </div>
     </div>`.trim();
 
@@ -59,7 +56,11 @@ function renderPlayOrCreate(){
 function addCreativeListener(){
     const creative = document.querySelector("#creative-btn");
     creative.addEventListener("click", event => {
-        MAIN.innerHTML = `
+       renderCreateForm();
+    })
+}
+function renderCreateForm(){
+    MAIN.innerHTML = `
         <h1>Create A New Case</h1>
         <form id="case-form">
             <input type="text" name="title" placeholder="Case Title">
@@ -70,8 +71,36 @@ function addCreativeListener(){
             <input type="text" placeholder="Option 2" name="option2">
             <input type="number" placeholder="Option 2 Rating Effect" step="10" name="points2"> 
             <input type="submit" value="Create Case">
-        </form>  `;
+        </form>  
+        <h1>Delete Your Cases</h1>
+        <ul id="delete-list">
+            ${renderDeleteList()}
+        </ul>
+        `;
         addCreateFormListener();
+        addDeleteListener();
+}
+
+function renderDeleteList(){
+    let html = "";
+    CURRENT_USER.attributes.creations.forEach(cas => {
+        html += `<li><h2>${cas.title}</h2><button class="delete-btn" data-id="${cas.id}">Delete Case</button></li>`
+    })
+    return html
+}
+
+function addDeleteListener(){
+    const deleteList = document.querySelector("#delete-list");
+    deleteList.addEventListener("click", event => {
+        if (event.target.className === "delete-btn"){
+            const caseId = parseInt(event.target.dataset.id)
+            fetch(`http://localhost:3000/cases/${caseId}`, {method: "DELETE"})
+            .then(resp => {
+                delete CURRENT_USER.attributes.creations.find(cre => cre.id === caseId);
+                renderCreateForm();
+            })
+            
+        }
     })
 }
 
@@ -96,7 +125,10 @@ function addCreateFormListener(){
 
         fetch("http://localhost:3000/cases", reqObj)
         .then(resp => resp.json())
-        .then(cas => console.log(cas))
+        .then(cas => {
+            CASES.push(cas.data);
+            renderPlayOrCreate();
+        })
     })
 }
 
@@ -104,8 +136,8 @@ function fetchCases(){
     fetch("http://localhost:3000/cases")
     .then(resp => resp.json())
     .then(cases => {
-        console.log(cases)
         CASES = cases.data;
+        OPTIONS = CASES.map(cas => cas.attributes.options).flat();
         
     })
 }
@@ -143,8 +175,10 @@ function addPlayListener() {
           }
 
         const selectedIds = getSelectValues(caseSelection)
-        const selectedCases = CASES.filter(cas => selectedIds.includes(cas.id));
+        selectedCases = CASES.filter(cas => selectedIds.includes(cas.id));
         COUNTER = 0;
+        RATING = selectedCases.reduce((total, cas) => {return total + parseInt(cas.attributes.rating_boost)}, 0);
+        renderRating();
         renderCases(selectedCases);
     })
 }
@@ -153,24 +187,55 @@ function addPlayListener() {
 function renderCases(selectedCases){
     if (COUNTER === selectedCases.length){
         renderWinScreen();
-    } else if (CURRENT_USER.attributes.rating <= 0){
+    } else if (RATING <= 0){
         renderLoseScreen();
     } else {
         renderCase(selectedCases[COUNTER]);
+        COUNTER++
     }
+}
+function renderWinScreen(){
+    MAIN.innerHTML = "<h1>You Win</h1>"
+}
+function renderLoseScreen(){
+    MAIN.innerHTML = "<h1>You Lose</h1>"
 }
 
 function renderCase(cas){
     MAIN.innerHTML = `
     <textarea readonly>${cas.attributes.disclosure}</textarea><br>
     ${renderOptions(cas)}`
+    addOptionListener()
 }
 
 function renderOptions(cas){
     let html = "";
     cas.attributes.options.forEach(option => {
-        html += `<button id="${cas.attributes.options[0].id}">${cas.attributes.options[0]}</button>`
+        html += `<button class="option-btn" data-id="${option.id}">${option.description}</button>`
     })
     return html
 }
+
+function addOptionListener(){
+    MAIN.addEventListener("click", event => {
+        if (event.target.className === "option-btn"){
+           const optionId = parseInt(event.target.dataset.id);
+           const selectedOption = OPTIONS.find(opt => { return opt.id === optionId})
+           updateRating(selectedOption.points);
+           renderCases(selectedCases);
+
+        }
+    })
+}
+
+function updateRating(pts){
+    RATING += pts;
+    renderRating();
+}
+
+function renderRating(){
+    const ratDiv = document.querySelector("#rating");
+    ratDiv.innerHTML = `<h1>Approval Rating: ${RATING}</h1>`;
+}
+
 main();
