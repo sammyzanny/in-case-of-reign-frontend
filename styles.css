@@ -29,9 +29,10 @@ html {
     height: 160px;
     width: 550px;
     padding: 20px;
+    text-align: center;
 }
 
-.create-user-form {
+form {
     text-align: center;
 }
 
@@ -55,6 +56,11 @@ label {
 }
 
 input[type=submit] {
-    background-color: rgb(207, 192, 142);
+    background-color: rgb(197, 191, 122);
+    font-size: x-large;
+}
+
+button {
+    background-color: rgb(197, 191, 122);
     font-size: x-large;
 }

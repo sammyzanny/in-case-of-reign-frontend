@@ -1,7 +1,7 @@
 let CURRENT_USER;
 let COUNTER = 0;
 const LOG_IN_FORM = document.querySelector(".create-user-form");
-const MAIN = document.querySelector("#main");
+const MAIN = document.querySelector("#center-field");
 let CASE_TITLES;
 
 function main(){
@@ -32,7 +32,6 @@ function addFormListener(){
         .then(userData => {
             CURRENT_USER = userData;
             const rulings = userData.data.attributes.rulings;
-            LOG_IN_FORM.display = "none";
             renderPlayOrCreate();
             
 
@@ -43,7 +42,7 @@ function addFormListener(){
 function renderPlayOrCreate(){
     MAIN.innerHTML = `
     <form id="play-form">
-        ${renderCaseBoxes()}
+        ${renderCaseBoxes()}<br>
         <input type="submit" value="Play">
     </form><br>
     <button id="creative-btn">Creative Mode</button>`.trim();
@@ -107,7 +106,7 @@ function fetchCases(){
 function renderCaseBoxes(){
     let html = "";
     CASE_TITLES.forEach((name, i) => {
-        html += `<label style="color:white" for="case${i}">${name}</label><input id="case${i}" type="checkbox" name="case" value="${i}"><br> `
+        html += `<label for="case${i}">${name}</label><input id="case${i}" type="checkbox" name="case" value="${i}"><br> `
     })
     return html
 }
