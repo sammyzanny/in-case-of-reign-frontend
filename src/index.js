@@ -32,7 +32,6 @@ function addFormListener(){
         .then(userData => {
             CURRENT_USER = userData.data;
             const rulings = userData.data.attributes.rulings;
-            
             renderPlayOrCreate();
             
 
@@ -107,7 +106,7 @@ function fetchCases(){
 function renderCaseBoxes(){
     let html = "";
     CASES.forEach((cas) => {
-        html += `<label style="color:white" for="case${cas.id}">${cas.attributes.title}</label><input id="case${cas.id}" type="checkbox" name="case" value="${cas.id}"><br> `
+        html += `<label for="case${cas.id}">${cas.attributes.title}</label><input id="case${cas.id}" type="checkbox" name="case" value="${cas.id}"><br> `
     })
     return html
 }
