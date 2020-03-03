@@ -27,7 +27,7 @@ html {
     margin-right: auto;
     background: radial-gradient(rgba(240, 223, 148, 1), rgba(240, 223, 148, .85));
     height: auto;
-    width: 550px;
+    width: auto;
     padding: 20px;
     text-align: center;
 }
@@ -76,3 +76,7 @@ button {
     display: table;
     clear: both;
   }
+
+ul {
+    list-style-type: none;
+}
