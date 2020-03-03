@@ -1,8 +1,8 @@
 let CURRENT_USER;
 let COUNTER = 0;
 const LOG_IN_FORM = document.querySelector(".create-user-form");
-const MAIN = document.querySelector("#main");
-let CASE_TITLES;
+const MAIN = document.querySelector("#center-field");
+let CASES;
 
 function main(){
     fetchCases();
@@ -30,9 +30,9 @@ function addFormListener(){
         fetch("http://localhost:3000/users", reqObj)
         .then(resp => resp.json())
         .then(userData => {
-            CURRENT_USER = userData;
+            CURRENT_USER = userData.data;
             const rulings = userData.data.attributes.rulings;
-            LOG_IN_FORM.display = "none";
+            
             renderPlayOrCreate();
             
 
@@ -43,7 +43,7 @@ function addFormListener(){
 function renderPlayOrCreate(){
     MAIN.innerHTML = `
     <form id="play-form">
-        ${renderCaseBoxes()}
+        ${renderCaseBoxes()}<br>
         <input type="submit" value="Play">
     </form><br>
     <button id="creative-btn">Creative Mode</button>`.trim();
@@ -99,15 +99,15 @@ function fetchCases(){
     .then(resp => resp.json())
     .then(cases => {
         console.log(cases)
-        CASE_TITLES = cases.data.map(cas => cas.attributes.title);
+        CASES = cases.data;
         
     })
 }
 
 function renderCaseBoxes(){
     let html = "";
-    CASE_TITLES.forEach((name, i) => {
-        html += `<label style="color:white" for="case${i}">${name}</label><input id="case${i}" type="checkbox" name="case" value="${i}"><br> `
+    CASES.forEach((cas) => {
+        html += `<label style="color:white" for="case${cas.id}">${cas.attributes.title}</label><input id="case${cas.id}" type="checkbox" name="case" value="${cas.id}"><br> `
     })
     return html
 }
