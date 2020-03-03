@@ -194,12 +194,6 @@ function renderCases(selectedCases){
         COUNTER++
     }
 }
-function renderWinScreen(){
-    MAIN.innerHTML = "<h1>You Win</h1>"
-}
-function renderLoseScreen(){
-    MAIN.innerHTML = "<h1>You Lose</h1>"
-}
 
 function renderCase(cas){
     MAIN.innerHTML = `
@@ -236,6 +230,29 @@ function updateRating(pts){
 function renderRating(){
     const ratDiv = document.querySelector("#rating");
     ratDiv.innerHTML = `<h1>Approval Rating: ${RATING}</h1>`;
+}
+ 
+function renderWinScreen() {
+    MAIN.innerHTML = `<h2 style='margin-top: 0px'>Congratulations ${CURRENT_USER.attributes.title} ${CURRENT_USER.attributes.name}, you have won.</h2>
+    <img id="win-gif" src="assets/win.gif" alt="winning">
+    <button id='start-over-button'>Start Over</button>`
+    addStartOverListener()
+}
+
+function renderLoseScreen() {
+    MAIN.innerHTML = `<h2 style='margin-top: 0px'>Sorry ${CURRENT_USER.attributes.title} ${CURRENT_USER.attributes.name}, you have lost and been dethroned. Your family has probably been killed.</h2>
+    <img id="lose-gif" src="assets/lose.gif" alt="winning"><br><br>
+    <button id='start-over-button'>Start Over</button>`
+    addStartOverListener()
+}
+
+function addStartOverListener() {
+    let startOver = document.getElementById('start-over-button')
+    startOver.addEventListener('click', function(e) {
+        MAIN.innerHTML = ''
+        renderPlayOrCreate()
+    })
+
 }
 
 main();
