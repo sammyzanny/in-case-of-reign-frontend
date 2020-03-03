@@ -40,12 +40,19 @@ function addFormListener(){
 }
 
 function renderPlayOrCreate(){
-    MAIN.innerHTML = `
-    <form id="play-form">
-        ${renderCaseBoxes()}<br>
-        <input type="submit" value="Play">
-    </form><br>
-    <button id="creative-btn">Creative Mode</button>`.trim();
+    MAIN.innerHTML = `<div class="row">
+        <div class="column">
+            <form id="play-form">
+            ${renderCaseBoxes()}<br><br>
+            <input type="submit" value="Play">
+            </form><br>
+        </div>
+        <div class="column">
+            <br><br><br><button id="creative-btn">Creative Mode</button>
+        </div>
+    </div>`.trim();
+
+    addPlayListener()
     addCreativeListener();
 }
 
@@ -104,10 +111,39 @@ function fetchCases(){
 }
 
 function renderCaseBoxes(){
-    let html = "";
+    let html = "<select id='multiselect' multiple>"
+
     CASES.forEach((cas) => {
-        html += `<label for="case${cas.id}">${cas.attributes.title}</label><input id="case${cas.id}" type="checkbox" name="case" value="${cas.id}"><br> `
+        html += `<option id="case${cas.id}" name="case" value="${cas.id}">${cas.attributes.title}</option>`
     })
+
+    html += "</select>"
     return html
 }
+
+function addPlayListener() {
+    const playBtn = document.getElementById('play-form')
+    const caseSelection = document.getElementById('multiselect')
+    playBtn.addEventListener('submit', function(e) {
+        e.preventDefault()
+
+        function getSelectValues(select) {
+            let result = [];
+            let options = select && select.options;
+            let opt;
+          
+            for (let i=0, iLen=options.length; i<iLen; i++) {
+              opt = options[i];
+          
+              if (opt.selected) {
+                result.push(opt.value || opt.text);
+              }
+            }
+            return result;
+          }
+
+        const selectedIds = getSelectValues(caseSelection)
+    })
+}
+
 main();
