@@ -91,14 +91,83 @@ function renderCreateForm(){
         <div class="column">
         <h1>Delete Your Cases</h1>
         <ul id="delete-list">
-            ${renderDeleteList()}
+        ${renderDeleteList()}
         </ul>
         </div>
+        </div>
+        <div class="row">
+            <div class="column">
+                <h1>Bundle Your Cases With a Theme</h1>
+                <form id="bundle-form">
+                    <input type="text" placeholder="Bundle Theme" name="theme">
+                    ${renderCaseBoxes()}
+                    <input type="submit" value="Bundle">
+                </form>
+            </div>
+            <div class="column">
+                <h1>Remove Bundles</h1>
+                <ul id="delete-bundle-list">
+                ${renderDeleteBundleList()}
+                </ul>
+            </div>
         </div>
         `;
         addCreateFormListener();
         addDeleteListener();
+        addBundleListener();
+        addDeleteBundleListener();
 }
+
+function addBundleListener(){
+    const bunFor = document.querySelector("#bundle-form");
+    const caseSelection = document.getElementById('multiselect')
+    bunFor.addEventListener('submit', function(e) {
+        e.preventDefault()
+
+
+        function getSelectValues(select) {
+            let result = [];
+            let options = select && select.options;
+            let opt;
+          
+            for (let i=0, iLen=options.length; i<iLen; i++) {
+              opt = options[i];
+          
+              if (opt.selected) {
+                result.push(opt.value || opt.text);
+              }
+            }
+            return result;
+        }
+        const selectedIds = getSelectValues(caseSelection)
+
+        const reqObj = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                theme: event.target.theme.value,
+                case_ids: selectedIds
+            })
+        }
+
+        fetch("http://localhost:3000/bundles", reqObj)
+        .then(resp => resp.json())
+        .then(bundle => {
+            BUNDLES.push(bundle.data.attributes);
+            renderCreateForm();
+        })
+    })
+}
+function renderDeleteBundleList(){
+    let html = "";
+    BUNDLES.forEach(bun => {
+        html += `<li><h2>${bun.theme}</h2><button class="delete-btn" data-id="${bun.id}">Remove Bundle</button></li>`
+    })
+    return html
+}
+
 
 function renderDeleteList(){
     let html = "";
@@ -128,6 +197,24 @@ function addDeleteListener(){
             })
             
             
+        }
+    })
+}
+
+function addDeleteBundleListener(){
+    const delBunLis = document.querySelector("#delete-bundle-list")
+    delBunLis.addEventListener("click", event => {
+        if (event.target.className === "delete-btn"){
+            const bundleId = parseInt(event.target.dataset.id)
+            fetch(`http://localhost:3000/bundles/${bundleId}`, {method: "DELETE"})
+            .then(resp => {
+                fetch("http://localhost:3000/bundles")
+                .then(resp => resp.json())
+                .then(bundles => {
+                    BUNDLES = bundles.data.map(bundle => bundle.attributes);
+                    renderCreateForm();
+                })
+            })
         }
     })
 }
@@ -174,7 +261,7 @@ function fetchBundles(){
     fetch("http://localhost:3000/bundles")
     .then(resp => resp.json())
     .then(bundles => {
-        BUNDLES = bundles.data.map(bundle => bundle.attributes)
+        BUNDLES = bundles.data.map(bundle => bundle.attributes);
     })
 }
 
@@ -221,13 +308,12 @@ function addPlayListener() {
     
         selectedBundles.forEach(bundle => {
             bundle.cases.forEach(cas => {
-                selectedIds.push(cas.id)
+                selectedIds.push(cas.id.toString())
             })
         })
         
-        console.log(selectedIds);
-        selectedCases = CASES.filter(cas => {return selectedIds.includes(parseInt(cas.id))});
-        console.log(selectedCases)
+        selectedCases = CASES.filter(cas => {return selectedIds.includes(cas.id)});
+
         COUNTER = 0;
         RATING = selectedCases.reduce((total, cas) => {return total + parseInt(cas.attributes.rating_boost)}, 0);
         renderRating();
