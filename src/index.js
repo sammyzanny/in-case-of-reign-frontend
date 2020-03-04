@@ -6,6 +6,7 @@ const MAIN = document.querySelector("#center-field");
 function main(){
     fetchCases();
     addFormListener();
+    addOptionListener()
 }
 
 
@@ -39,6 +40,7 @@ function addFormListener(){
 function renderPlayOrCreate(){
     MAIN.innerHTML = `<div class="row">
         <div class="column">
+            <label style='font-size: medium' for='play-form'>Select Cases<br>(Hold cmd to select multiple)</label>
             <form id="play-form">
             ${renderCaseBoxes()}<br><br>
             <input type="submit" value="Play">
@@ -196,7 +198,7 @@ function addPlayListener() {
 function renderCases(selectedCases){
     if (RATING <= 0){
         renderLoseScreen();
-    } else if (selectedCases.length === COUNTER){
+    } else if (COUNTER === selectedCases.length){
         renderWinScreen();
     } else {
         renderCase(selectedCases[COUNTER]);
@@ -207,15 +209,14 @@ function renderCase(cas){
     COUNTER++;
     MAIN.innerHTML = `
     <h2>${cas.attributes.title}</h2>
-    <textarea readonly>${cas.attributes.disclosure}</textarea><br>
+    <p>${cas.attributes.disclosure}</p><br>
     ${renderOptions(cas)}`
-    addOptionListener()
 }
 
 function renderOptions(cas){
     let html = "";
     cas.attributes.options.forEach(option => {
-        html += `<button class="option-btn" data-id="${option.id}">${option.description}</button>`
+        html += `<button style='margin-left: 5px;margin-right: 5px' class="option-btn" data-id="${option.id}">${option.description}</button>`
     })
     return html
 }
@@ -223,10 +224,11 @@ function renderOptions(cas){
 function addOptionListener(){
     MAIN.addEventListener("click", event => {
         if (event.target.className === "option-btn"){
-           const optionId = parseInt(event.target.dataset.id);
-           const selectedOption = OPTIONS.find(opt => { return opt.id === optionId})
-           updateRating(selectedOption.points);
-           renderCases(selectedCases);
+            const optionId = parseInt(event.target.dataset.id);
+            const selectedOption = OPTIONS.find(opt => { return opt.id === optionId})
+            alert(selectedOption.alert)
+            updateRating(selectedOption.points);
+            renderCases(selectedCases);
 
         }
     })
@@ -239,12 +241,20 @@ function updateRating(pts){
 
 function renderRating(){
     const ratDiv = document.querySelector("#rating");
-    ratDiv.innerHTML = `<h1>Approval Rating: ${RATING}</h1>`;
+    ratDiv.style = `background: radial-gradient(rgba(240, 223, 148, 1), rgba(240, 223, 148, .85));
+        width: 320px;
+        border-radius: 25px;
+        text-align: center;
+        height: 45px;
+        padding-top: 5px;
+    `
+    ratDiv.innerHTML = `<h1 style='margin-top: 0px'>Approval Rating: ${RATING}</h1>`;
 }
+ 
 
 function renderWinScreen() {
     MAIN.innerHTML = `<h2 style='margin-top: 0px'>Congratulations ${CURRENT_USER.attributes.title} ${CURRENT_USER.attributes.name}, you have won.</h2>
-    <img id="win-gif" src="assets/win.gif" alt="winning">
+    <img id="win-gif" src="assets/win.gif" alt="winning"><br><br>
     <button id='start-over-button'>Start Over</button>`
     addStartOverListener()
 }
@@ -259,6 +269,8 @@ function renderLoseScreen() {
 function addStartOverListener() {
     let startOver = document.getElementById('start-over-button')
     startOver.addEventListener('click', function(e) {
+        const ratDiv = document.querySelector("#rating");
+        ratDiv.innerHTML = ``;
         MAIN.innerHTML = ''
         renderPlayOrCreate()
     })
