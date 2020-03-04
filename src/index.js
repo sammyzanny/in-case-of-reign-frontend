@@ -1,4 +1,4 @@
-let CURRENT_USER, COUNTER, CASES, selectedCases, RATING, OPTIONS;
+let CURRENT_USER, COUNTER, CASES, selectedCases, RATING , OPTIONS;
 const LOG_IN_FORM = document.querySelector(".create-user-form");
 const MAIN = document.querySelector("#center-field");
 
@@ -91,6 +91,15 @@ function renderDeleteList(){
     return html
 }
 
+function fetchCurrentUser(myFunc){
+    fetch(`http://localhost:3000/users/${CURRENT_USER.id}`)
+        .then(resp => resp.json())
+        .then(userData => {
+            CURRENT_USER = userData.data;
+            myFunc();
+        })
+}
+
 function addDeleteListener(){
     const deleteList = document.querySelector("#delete-list");
     deleteList.addEventListener("click", event => {
@@ -98,9 +107,9 @@ function addDeleteListener(){
             const caseId = parseInt(event.target.dataset.id)
             fetch(`http://localhost:3000/cases/${caseId}`, {method: "DELETE"})
             .then(resp => {
-                delete CURRENT_USER.attributes.creations.find(cre => cre.id === caseId);
-                renderCreateForm();
+                fetchCurrentUser(renderCreateForm)
             })
+            
             
         }
     })
@@ -129,7 +138,7 @@ function addCreateFormListener(){
         .then(resp => resp.json())
         .then(cas => {
             CASES.push(cas.data);
-            renderPlayOrCreate();
+            fetchCurrentUser(renderPlayOrCreate);
         })
     })
 }
@@ -193,12 +202,14 @@ function renderCases(selectedCases){
         renderWinScreen();
     } else {
         renderCase(selectedCases[COUNTER]);
-        COUNTER++
     }
 }
 
 function renderCase(cas){
-    MAIN.innerHTML = `<p>${cas.attributes.disclosure}</p><br>
+    COUNTER++;
+    MAIN.innerHTML = `
+    <h2>${cas.attributes.title}</h2>
+    <p>${cas.attributes.disclosure}</p><br>
     ${renderOptions(cas)}`
 }
 
@@ -240,6 +251,7 @@ function renderRating(){
     ratDiv.innerHTML = `<h1 style='margin-top: 0px'>Approval Rating: ${RATING}</h1>`;
 }
  
+
 function renderWinScreen() {
     MAIN.innerHTML = `<h2 style='margin-top: 0px'>Congratulations ${CURRENT_USER.attributes.title} ${CURRENT_USER.attributes.name}, you have won.</h2>
     <img id="win-gif" src="assets/win.gif" alt="winning"><br><br>
