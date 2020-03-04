@@ -49,7 +49,7 @@ function renderPlayOrCreate(){
             </form><br>
         </div>
         <div class="column">
-            <br><br><br><button id="creative-btn">Create New Case</button>
+            <br><br><br><button id="creative-btn">Creator Mode</button>
         </div>
     </div>`.trim();
 
@@ -73,6 +73,7 @@ function addCreativeListener(){
 }
 function renderCreateForm(){
     MAIN.style.width = '1200px'
+    MAIN.style.height = '361px'
     MAIN.innerHTML = `<div class="row">
     <div class="column">
         <h1 style="margin-top: 0px; margin-bottom: 8px;">Create A New Case</h1>
@@ -88,10 +89,10 @@ function renderCreateForm(){
             <button float='right' class='return-to-menu'>Return to Main Menu</button>
         </form>  
         </div>
-        <div class="column">
+        <div class="column" style='height: 361px'>
         <h1>Delete Your Cases</h1>
-        <ul id="delete-list">
-        ${renderDeleteList()}
+        <ul style='height: 250px; overflow: scroll;' id="delete-list">
+            ${renderDeleteList()}
         </ul>
         </div>
         </div>
@@ -242,6 +243,8 @@ function addCreateFormListener(){
         .then(resp => resp.json())
         .then(cas => {
             CASES.push(cas.data);
+            MAIN.style = 'margin-top: 40px;'
+            MAIN.innerHTML = ''
             fetchCurrentUser(renderPlayOrCreate);
         })
     })
@@ -299,18 +302,20 @@ function addPlayListener() {
         }
         const selectedIds = getSelectValues(caseSelection)
 
-        const selectedBundles = [];
-        event.target.bundles.forEach(bundle => {
-            if (bundle.checked){
-                selectedBundles.push(BUNDLES.find(bund => {return bund.id == bundle.dataset.id}))
-            }
+         const selectedBundles = [];
+         event.target.bundles.forEach(bundle => {
+             if (bundle.checked){
+                 selectedBundles.push(BUNDLES.find(bund => {return bund.id == bundle.dataset.id}))
+             }
         })
     
+
         selectedBundles.forEach(bundle => {
             bundle.cases.forEach(cas => {
                 selectedIds.push(cas.id.toString())
             })
         })
+
         
         selectedCases = CASES.filter(cas => {return selectedIds.includes(cas.id)});
 
@@ -360,7 +365,13 @@ function addButtonListeners(){
         } else if (event.target.className === "return-to-menu"){
             MAIN.style = 'margin-top: 40px;'
             MAIN.innerHTML = ''
-            renderPlayOrCreate()
+            fetch("http://localhost:3000/cases")
+            .then(resp => resp.json())
+            .then(cases => {
+                CASES = cases.data;
+                OPTIONS = CASES.map(cas => cas.attributes.options).flat();
+                renderPlayOrCreate()
+            })
         }
     })
 }
