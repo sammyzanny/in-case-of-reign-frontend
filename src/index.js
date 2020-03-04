@@ -1,4 +1,4 @@
-let CURRENT_USER, COUNTER, CASES, selectedCases, RATING, OPTIONS;
+let CURRENT_USER, COUNTER, CASES, selectedCases, RATING , OPTIONS;
 const LOG_IN_FORM = document.querySelector(".create-user-form");
 const MAIN = document.querySelector("#center-field");
 
@@ -89,6 +89,15 @@ function renderDeleteList(){
     return html
 }
 
+function fetchCurrentUser(myFunc){
+    fetch(`http://localhost:3000/users/${CURRENT_USER.id}`)
+        .then(resp => resp.json())
+        .then(userData => {
+            CURRENT_USER = userData.data;
+            myFunc();
+        })
+}
+
 function addDeleteListener(){
     const deleteList = document.querySelector("#delete-list");
     deleteList.addEventListener("click", event => {
@@ -96,9 +105,9 @@ function addDeleteListener(){
             const caseId = parseInt(event.target.dataset.id)
             fetch(`http://localhost:3000/cases/${caseId}`, {method: "DELETE"})
             .then(resp => {
-                delete CURRENT_USER.attributes.creations.find(cre => cre.id === caseId);
-                renderCreateForm();
+                fetchCurrentUser(renderCreateForm)
             })
+            
             
         }
     })
@@ -127,7 +136,7 @@ function addCreateFormListener(){
         .then(resp => resp.json())
         .then(cas => {
             CASES.push(cas.data);
-            renderPlayOrCreate();
+            fetchCurrentUser(renderPlayOrCreate);
         })
     })
 }
@@ -185,18 +194,19 @@ function addPlayListener() {
 
 
 function renderCases(selectedCases){
-    if (COUNTER === selectedCases.length){
-        renderWinScreen();
-    } else if (RATING <= 0){
+    if (RATING <= 0){
         renderLoseScreen();
+    } else if (selectedCases.length === COUNTER){
+        renderWinScreen();
     } else {
         renderCase(selectedCases[COUNTER]);
-        COUNTER++
     }
 }
 
 function renderCase(cas){
+    COUNTER++;
     MAIN.innerHTML = `
+    <h2>${cas.attributes.title}</h2>
     <textarea readonly>${cas.attributes.disclosure}</textarea><br>
     ${renderOptions(cas)}`
     addOptionListener()
@@ -230,8 +240,8 @@ function updateRating(pts){
 function renderRating(){
     const ratDiv = document.querySelector("#rating");
     ratDiv.innerHTML = `<h1>Approval Rating: ${RATING}</h1>`;
+}
 
- 
 function renderWinScreen() {
     MAIN.innerHTML = `<h2 style='margin-top: 0px'>Congratulations ${CURRENT_USER.attributes.title} ${CURRENT_USER.attributes.name}, you have won.</h2>
     <img id="win-gif" src="assets/win.gif" alt="winning">
