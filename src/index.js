@@ -1,12 +1,13 @@
-let CURRENT_USER, COUNTER, CASES, selectedCases, RATING , OPTIONS;
+let CURRENT_USER, COUNTER, CASES, selectedCases, RATING , OPTIONS, BUNDLES;
 const LOG_IN_FORM = document.querySelector(".create-user-form");
 const MAIN = document.querySelector("#center-field");
 
 
 function main(){
     fetchCases();
+    fetchBundles();
     addFormListener();
-    addOptionListener()
+    addOptionListener();
 }
 
 
@@ -43,6 +44,7 @@ function renderPlayOrCreate(){
             <label style='font-size: medium' for='play-form'>Select Cases<br>(Hold cmd to select multiple)</label>
             <form id="play-form">
             ${renderCaseBoxes()}<br><br>
+            ${renderBundles()}
             <input type="submit" value="Play">
             </form><br>
         </div>
@@ -53,6 +55,14 @@ function renderPlayOrCreate(){
 
     addPlayListener()
     addCreativeListener();
+}
+
+function renderBundles(){
+    let html = "";
+    BUNDLES.forEach(bundle => {
+        html += `<label for="bundle${bundle.id}">${bundle.theme}</label><input id="bundle${bundle.id}" data-id="${bundle.id}" type="checkbox" name="bundles"><br>`
+    })
+    return html
 }
 
 function addCreativeListener(){
@@ -153,6 +163,14 @@ function fetchCases(){
     })
 }
 
+function fetchBundles(){
+    fetch("http://localhost:3000/bundles")
+    .then(resp => resp.json())
+    .then(bundles => {
+        BUNDLES = bundles.data.map(bundle => bundle.attributes)
+    })
+}
+
 function renderCaseBoxes(){
     let html = "<select id='multiselect' multiple>"
 
@@ -170,6 +188,7 @@ function addPlayListener() {
     playBtn.addEventListener('submit', function(e) {
         e.preventDefault()
 
+
         function getSelectValues(select) {
             let result = [];
             let options = select && select.options;
@@ -183,10 +202,25 @@ function addPlayListener() {
               }
             }
             return result;
-          }
-
+        }
         const selectedIds = getSelectValues(caseSelection)
-        selectedCases = CASES.filter(cas => selectedIds.includes(cas.id));
+
+        const selectedBundles = [];
+        event.target.bundles.forEach(bundle => {
+            if (bundle.checked){
+                selectedBundles.push(BUNDLES.find(bund => {return bund.id == bundle.dataset.id}))
+            }
+        })
+    
+        selectedBundles.forEach(bundle => {
+            bundle.cases.forEach(cas => {
+                selectedIds.push(cas.id)
+            })
+        })
+        
+        console.log(selectedIds);
+        selectedCases = CASES.filter(cas => {return selectedIds.includes(parseInt(cas.id))});
+        console.log(selectedCases)
         COUNTER = 0;
         RATING = selectedCases.reduce((total, cas) => {return total + parseInt(cas.attributes.rating_boost)}, 0);
         renderRating();
