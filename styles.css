@@ -60,6 +60,12 @@ input[type=submit] {
     font-size: x-large;
 }
 
+input[type=number] {
+    background-color: rgb(240, 223, 148);
+    font-size: large;
+    padding: 12px;
+}
+
 button {
     background-color: rgb(197, 191, 122);
     font-size: x-large;

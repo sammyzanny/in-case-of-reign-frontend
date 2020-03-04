@@ -6,7 +6,7 @@ const MAIN = document.querySelector("#center-field");
 function main(){
     fetchCases();
     addFormListener();
-    addOptionListener()
+    addButtonListeners()
 }
 
 
@@ -62,22 +62,29 @@ function addCreativeListener(){
     })
 }
 function renderCreateForm(){
-    MAIN.innerHTML = `
-        <h1>Create A New Case</h1>
+    MAIN.style.width = '1200px'
+    MAIN.innerHTML = `<div class="row">
+    <div class="column">
+        <h1 style="margin-top: 0px; margin-bottom: 8px;">Create A New Case</h1>
         <form id="case-form">
-            <input type="text" name="title" placeholder="Case Title">
-            <input type="number" name="boost" placeholder="Rating Boost" step="10"> 
-            <textarea name="disclosure" placeholder="Case Disclosure"></textarea>
-            <input type="text" placeholder="Option 1" name="option1">
-            <input type="number" placeholder="Option 1 Rating Effect" step="10" name="points1">
-            <input type="text" placeholder="Option 2" name="option2">
-            <input type="number" placeholder="Option 2 Rating Effect" step="10" name="points2"> 
-            <input type="submit" value="Create Case">
+            <input type="text" name="title" float='left' style="width: 365px; font-size: large;" placeholder="Case Title">
+            <input type="number" name="boost" float='right' style="width: 120px;" placeholder="Rating Boost"><br><br>
+            <textarea style="resize: none; margin: 0px; width: 528px; height: 72px; font-size: large; background-color: rgb(240, 223, 148);" name="disclosure" placeholder="Case Disclosure"></textarea><br><br>
+            <input type="text" placeholder="Option 1" float='left' style="width: 365px; font-size: large;" name="option1">
+            <input type="number" placeholder="Rating Effect" float='right' style="width: 120px;" name="points1">
+            <input type="text" placeholder="Option 2" float='left' style="width: 365px; font-size: large;" name="option2">
+            <input type="number" placeholder="Rating Effect" float='right' style="width: 120px;" name="points2"><br><br>
+            <input type="submit" float='left' value="Create Case">
+            <button float='right' class='return-to-menu'>Return to Main Menu</button>
         </form>  
+        </div>
+        <div class="column">
         <h1>Delete Your Cases</h1>
         <ul id="delete-list">
             ${renderDeleteList()}
         </ul>
+        </div>
+        </div>
         `;
         addCreateFormListener();
         addDeleteListener();
@@ -221,7 +228,7 @@ function renderOptions(cas){
     return html
 }
 
-function addOptionListener(){
+function addButtonListeners(){
     MAIN.addEventListener("click", event => {
         if (event.target.className === "option-btn"){
             const optionId = parseInt(event.target.dataset.id);
@@ -230,6 +237,10 @@ function addOptionListener(){
             updateRating(selectedOption.points);
             renderCases(selectedCases);
 
+        } else if (event.target.className === "return-to-menu"){
+            MAIN.style = 'margin-top: 40px;'
+            MAIN.innerHTML = ''
+            renderPlayOrCreate()
         }
     })
 }
@@ -253,6 +264,7 @@ function renderRating(){
  
 
 function renderWinScreen() {
+    MAIN.style = 'margin-top: 0px;'
     MAIN.innerHTML = `<h2 style='margin-top: 0px'>Congratulations ${CURRENT_USER.attributes.title} ${CURRENT_USER.attributes.name}, you have won.</h2>
     <img id="win-gif" src="assets/win.gif" alt="winning"><br><br>
     <button id='start-over-button'>Start Over</button>`
@@ -260,6 +272,7 @@ function renderWinScreen() {
 }
 
 function renderLoseScreen() {
+    MAIN.style = 'margin-top: 0px;'
     MAIN.innerHTML = `<h2 style='margin-top: 0px'>Sorry ${CURRENT_USER.attributes.title} ${CURRENT_USER.attributes.name}, you have lost and been dethroned. Your family has probably been killed.</h2>
     <img id="lose-gif" src="assets/lose.gif" alt="winning"><br><br>
     <button id='start-over-button'>Start Over</button>`
@@ -269,7 +282,9 @@ function renderLoseScreen() {
 function addStartOverListener() {
     let startOver = document.getElementById('start-over-button')
     startOver.addEventListener('click', function(e) {
+        MAIN.style = 'margin-top: 40px;'
         const ratDiv = document.querySelector("#rating");
+        ratDiv.style = 'background: none'
         ratDiv.innerHTML = ``;
         MAIN.innerHTML = ''
         renderPlayOrCreate()
