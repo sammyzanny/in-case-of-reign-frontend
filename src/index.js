@@ -1,4 +1,4 @@
-let CURRENT_USER, COUNTER, CASES, selectedCases, RATING , OPTIONS, BUNDLES;
+let CURRENT_USER, COUNTER, CASES, selectedCases, RATING , OPTIONS, BUNDLES, OPTIONS_COUNTER;
 const LOG_IN_FORM = document.querySelector(".create-user-form");
 const MAIN = document.querySelector("#center-field");
 
@@ -72,6 +72,7 @@ function addCreativeListener(){
     })
 }
 function renderCreateForm(){
+    OPTIONS_COUNTER = 3;
     MAIN.style.width = '1200px'
     MAIN.innerHTML = `<div class="row">
     <div class="column">
@@ -80,13 +81,18 @@ function renderCreateForm(){
             <input type="text" name="title" float='left' style="width: 365px; font-size: large;" placeholder="Case Title">
             <input type="number" name="boost" float='right' style="width: 120px;" placeholder="Rating Boost"><br><br>
             <textarea style="resize: none; margin: 0px; width: 528px; height: 72px; font-size: large; background-color: rgb(240, 223, 148);" name="disclosure" placeholder="Case Disclosure"></textarea><br><br>
-            <input type="text" placeholder="Option 1" float='left' style="width: 365px; font-size: large;" name="option1">
-            <input type="number" placeholder="Rating Effect" float='right' style="width: 120px;" name="points1">
-            <input type="text" placeholder="Option 2" float='left' style="width: 365px; font-size: large;" name="option2">
-            <input type="number" placeholder="Rating Effect" float='right' style="width: 120px;" name="points2"><br><br>
+            <div id="options">
+                <input type="text" placeholder="Option 1" float='left' style="width: 365px; font-size: large;" name="descriptions">
+                <input type="number" placeholder="Rating Effect" float='right' style="width: 120px;" name="points">
+                <input type="text" placeholder="Consequence" name="alerts">
+                <input type="text" placeholder="Option 2" float='left' style="width: 365px; font-size: large;" name="descriptions">
+                <input type="number" placeholder="Rating Effect" float='right' style="width: 120px;" name="points"><br><br>
+                <input type="text" placeholder="Consequence" name="alerts">
+            </div>
             <input type="submit" float='left' value="Create Case">
             <button float='right' class='return-to-menu'>Return to Main Menu</button>
-        </form>  
+            </form>  
+            <button id="add-options">Add Options</button>
         </div>
         <div class="column">
         <h1>Delete Your Cases</h1>
@@ -116,6 +122,20 @@ function renderCreateForm(){
         addDeleteListener();
         addBundleListener();
         addDeleteBundleListener();
+        addOptionsListener();
+}
+
+function addOptionsListener(){
+    const optionsBtn = document.querySelector("#add-options");
+    const optionsDiv = document.querySelector("#options")
+    optionsBtn.addEventListener("click", event => {
+        optionsDiv.innerHTML += `
+        <input type="text" placeholder="Option ${OPTIONS_COUNTER}" float='left' style="width: 365px; font-size: large;" name="descriptions">
+        <input type="number" placeholder="Rating Effect" float='right' style="width: 120px;" name="points">
+        <input type="text" placeholder="Consequence" name="alerts">
+        `.trim();
+        OPTIONS_COUNTER++;
+    })
 }
 
 function addBundleListener(){
@@ -223,6 +243,10 @@ function addCreateFormListener(){
     const createForm = document.querySelector("#case-form");
     createForm.addEventListener("submit", event => {
         event.preventDefault();
+        const descriptions = [], points = [], alerts = [];
+        event.target.descriptions.forEach(description => descriptions.push(description.value)),
+        event.target.points.forEach(point => points.push(point.value)),
+        event.target.alerts.forEach(alert => alerts.push(alert.value))
         const reqObj = {
             method: "POST",
             headers: {"Content-Type": "application/json"},
@@ -231,10 +255,9 @@ function addCreateFormListener(){
                 rating_boost: event.target.boost.value,
                 disclosure: event.target.disclosure.value,
                 creator_id: CURRENT_USER.id,
-                description1: event.target.option1.value,
-                points1: event.target.points1.value,
-                description2: event.target.option2.value,
-                points2: event.target.points2.value
+                descriptions: descriptions,
+                all_points: points,
+                alerts: alerts
             })
         }
 
@@ -242,6 +265,7 @@ function addCreateFormListener(){
         .then(resp => resp.json())
         .then(cas => {
             CASES.push(cas.data);
+            OPTIONS = CASES.map(cas => cas.attributes.options).flat();
             fetchCurrentUser(renderPlayOrCreate);
         })
     })
@@ -279,8 +303,8 @@ function renderCaseBoxes(){
 function addPlayListener() {
     const playBtn = document.getElementById('play-form')
     const caseSelection = document.getElementById('multiselect')
-    playBtn.addEventListener('submit', function(e) {
-        e.preventDefault()
+    playBtn.addEventListener('submit', function(event) {
+        event.preventDefault()
 
 
         function getSelectValues(select) {
@@ -300,11 +324,17 @@ function addPlayListener() {
         const selectedIds = getSelectValues(caseSelection)
 
         const selectedBundles = [];
-        event.target.bundles.forEach(bundle => {
-            if (bundle.checked){
-                selectedBundles.push(BUNDLES.find(bund => {return bund.id == bundle.dataset.id}))
+        if (event.target.bundles.length){
+            event.target.bundles.forEach(bundle => {
+                if (bundle.checked){
+                    selectedBundles.push(BUNDLES.find(bund => {return bund.id == bundle.dataset.id}))
+                }
+            })
+        } else {
+            if (event.target.bundles.checked){
+                selectedBundles.push(BUNDLES.find(bund => {return bund.id == event.target.bundles.dataset.id}))
             }
-        })
+        }
     
         selectedBundles.forEach(bundle => {
             bundle.cases.forEach(cas => {
