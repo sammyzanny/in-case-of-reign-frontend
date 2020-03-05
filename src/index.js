@@ -41,14 +41,14 @@ function addFormListener(){
 function renderPlayOrCreate(){
     MAIN.innerHTML = `<div class="row">
         <div class="column">
-            <div style="max-height: 60vh; overflow: scroll;">
                 <label style='font-size: medium' for='play-form'>Select Cases<br>(Hold cmd to select multiple)</label>
                 <form id="play-form">
+                <div style="max-height: 45vh; overflow: scroll;">
                 ${renderCaseBoxes()}<br><br>
                 ${renderBundles()}<br>
+                </div>
                 <input type="submit" value="Play">
                 </form><br>
-            </div>
         </div>
         <div class="column">
             <br><br><br><button id="creative-btn">Creator Mode</button>
@@ -78,9 +78,10 @@ function renderCreateForm(){
     MAIN.style.width = '1200px'
     MAIN.style.height = '450px'
     MAIN.style.marginTop = '0px'
-    MAIN.innerHTML = `<div style="height: 225px;" class="row">
+    MAIN.innerHTML = `<div style="height: 225px; margin-bottom: 10px;" class="row">
     <div class="column">
         <h2 style="margin-top: 0px; margin-bottom: 8px;">Create A New Case</h2>
+        <div style="max-height: 26vh; overflow: scroll;">
         <form id="case-form">
 
            <input type="text" name="title" float='left' style="width: 365px; font-size: small; padding: 0px; margin-bottom: 4px;" placeholder="Case Title">
@@ -98,11 +99,11 @@ function renderCreateForm(){
             <input type="submit" float='left' style="font-size: large" value="Create Case">
             <button float='right' style="font-size: large" class='return-to-menu'>Return to Main Menu</button>
             </form>  
-
+            </div>
         </div>
         <div class="column" style='height: 225px'>
         <h2 style='margin-top: 0px; margin-bottom: 8px'>Delete Your Cases</h2>
-        <ul style='height: 215px; width: 520px; overflow: scroll; margin-top: 0px; margin-bottom: 0px' id="delete-list">
+        <ul style='height: 26vh; width: 220px; overflow: scroll; margin-top: 0px; margin-bottom: 0px; margin-left: 150px' id="delete-list">
             ${renderDeleteList()}
         </ul>
         </div>
@@ -111,14 +112,14 @@ function renderCreateForm(){
             <div class="column">
                 <h2 style='margin-top: 0px; margin-bottom: 8px'>Bundle Your Cases With a Theme</h2>
                 <form id="bundle-form">
-                    <input type="text" style="width: 365px; font-size: small; padding: 0px; margin-bottom: 4px;" placeholder="Bundle Theme" name="theme">
+                    <input type="text" style="width: 365px; font-size: small; padding: 0px; margin-bottom: 4px;" placeholder="Bundle Theme" name="theme"><br>
                     ${renderCaseBoxes()}<br><br>
                     <input type="submit" style='font-size: large' value="Bundle">
                 </form>
             </div>
             <div class="column">
                 <h2 style='margin-top: 0px; margin-bottom: 8px'>Remove Bundles</h2>
-                <ul style='height: 215px; width: 520px; overflow: scroll; margin-top: 0px; margin-bottom: 0px' id="delete-bundle-list">
+                <ul style='height: 24vh; width: 220px; overflow: scroll; margin-top: 0px; margin-bottom: 0px; margin-left: 150px' id="delete-bundle-list">
                 ${renderDeleteBundleList()}
                 </ul>
             </div>
@@ -191,7 +192,7 @@ function renderDeleteBundleList(){
     let html = "";
     BUNDLES.forEach(bun => {
         if (bun.id != 4){
-            html += `<li style='margin-bottom: 5px'><p style='float: left; margin-top: 0px; margin-bottom: 0px'>${bun.theme}</p><button style='float: right' class="delete-btn" data-id="${bun.id}">Remove Bundle</button></li>`
+            html += `<li style='margin-bottom: 5px'><p style='float: left; margin-top: 0px; margin-bottom: 0px'>${bun.theme}</p><button style='float: right' class="delete-btn" data-id="${bun.id}">Remove Bundle</button><br></li>`
         }
     })
     return html
@@ -277,7 +278,7 @@ function addCreateFormListener(){
             OPTIONS = CASES.map(cas => cas.attributes.options).flat();
             MAIN.style = 'margin-top: 40px;'
             MAIN.innerHTML = ''
-            fetchCurrentUser(renderPlayOrCreate);
+            fetchCurrentUser(renderCreateForm);
         })
     })
 }
@@ -311,12 +312,21 @@ function renderCaseBoxes(){
     return html
 }
 
+function renderCaseCheckBoxes(){
+    let html = ""
+
+    CASES.forEach((cas) => {
+        html += `<label style='font-size: larger' for="case${cas.id}">${cas.attributes.title}</label><input id="case${cas.id}" data-id="${cas.id}" type="checkbox" name="case"><br>`
+    })
+
+    return html
+}
+
 function addPlayListener() {
     const playBtn = document.getElementById('play-form')
     const caseSelection = document.getElementById('multiselect')
     playBtn.addEventListener('submit', function(event) {
         event.preventDefault()
-
 
         function getSelectValues(select) {
             let result = [];
