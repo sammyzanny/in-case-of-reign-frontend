@@ -41,12 +41,14 @@ function addFormListener(){
 function renderPlayOrCreate(){
     MAIN.innerHTML = `<div class="row">
         <div class="column">
-            <label style='font-size: medium' for='play-form'>Select Cases<br>(Hold cmd to select multiple)</label>
-            <form id="play-form">
-            ${renderCaseBoxes()}<br><br>
-            ${renderBundles()}
-            <input type="submit" value="Play">
-            </form><br>
+            <div style="max-height: 60vh; overflow: scroll;">
+                <label style='font-size: medium' for='play-form'>Select Cases<br>(Hold cmd to select multiple)</label>
+                <form id="play-form">
+                ${renderCaseBoxes()}<br><br>
+                ${renderBundles()}<br>
+                <input type="submit" value="Play">
+                </form><br>
+            </div>
         </div>
         <div class="column">
             <br><br><br><button id="creative-btn">Creator Mode</button>
@@ -60,7 +62,7 @@ function renderPlayOrCreate(){
 function renderBundles(){
     let html = "";
     BUNDLES.forEach(bundle => {
-        html += `<label for="bundle${bundle.id}">${bundle.theme}</label><input id="bundle${bundle.id}" data-id="${bundle.id}" type="checkbox" name="bundles"><br>`
+        html += `<label style='font-size: larger' for="bundle${bundle.id}">${bundle.theme}</label><input id="bundle${bundle.id}" data-id="${bundle.id}" type="checkbox" name="bundles"><br>`
     })
     return html
 }
@@ -87,12 +89,12 @@ function renderCreateForm(){
             <div id="options">
                 <input type="text" placeholder="Option 1" float='left' style="width: 365px; font-size: small; padding: 0px;" name="descriptions">
                 <input type="number" placeholder="Rating Effect" float='right' style="width: 120px; font-size: small; padding: 0px;" name="points">
-                <input type="text" placeholder="Consequence" name="alerts">
-                <input type="text" placeholder="Option 2" float='left' style="width: 365px; font-size: large;" name="descriptions">
-                <input type="number" placeholder="Rating Effect" float='right' style="width: 120px;" name="points"><br><br>
-                <input type="text" placeholder="Consequence" name="alerts">
+                <input type="text" placeholder="Consequence" style="width: 365px; font-size: small; padding: 0px;" name="alerts">
+                <input type="text" placeholder="Option 2" float='left' style="width: 365px; font-size: small; padding: 0px;" name="descriptions">
+                <input type="number" placeholder="Rating Effect" float='right' style="width: 120px; font-size: small; padding: 0px;" name="points">
+                <input type="text" placeholder="Consequence" style="width: 365px; font-size: small; padding: 0px;" name="alerts">
             </div>
-            <button id="add-options">Add Options</button><br><br>
+            <button style="font-size: large" id="add-options">Add Options</button>
             <input type="submit" float='left' style="font-size: large" value="Create Case">
             <button float='right' style="font-size: large" class='return-to-menu'>Return to Main Menu</button>
             </form>  
@@ -135,9 +137,9 @@ function addOptionsListener(){
     optionsBtn.addEventListener("click", event => {
         event.preventDefault();
         optionsDiv.innerHTML += `
-        <input type="text" placeholder="Option ${OPTIONS_COUNTER}" float='left' style="width: 365px; font-size: large;" name="descriptions">
-        <input type="number" placeholder="Rating Effect" float='right' style="width: 120px;" name="points">
-        <input type="text" placeholder="Consequence" name="alerts">
+        <input type="text" placeholder="Option ${OPTIONS_COUNTER}" float='left' style="width: 365px; font-size: small; padding: 0px;" name="descriptions">
+        <input type="number" placeholder="Rating Effect" float='right' style="width: 120px; font-size: small; padding: 0px;" name="points">
+        <input type="text" placeholder="Consequence" style="width: 365px; font-size: small; padding: 0px;" name="alerts">
         `.trim();
         OPTIONS_COUNTER++;
     })
