@@ -1,7 +1,6 @@
-let CURRENT_USER, COUNTER, CASES, selectedCases, RATING , OPTIONS, BUNDLES, OPTIONS_COUNTER;
+let CURRENT_USER, COUNTER, CASES, selectedCases, RATING , OPTIONS, BUNDLES, OPTIONS_COUNTER, PICS;
 const LOG_IN_FORM = document.querySelector(".create-user-form");
 const MAIN = document.querySelector("#center-field");
-
 
 function main(){
     fetchCases();
@@ -96,6 +95,10 @@ function renderCreateForm(){
                 <input type="text" placeholder="Consequence" style="width: 365px; font-size: small; padding: 0px;" name="alerts">
             </div>
             <button style="font-size: large" id="add-options">Add Options</button>
+            <input type="text" name="url" float='left' style="width: 365px; font-size: small; padding: 0px; margin-bottom: 4px;" placeholder="Paste an Image URL or Choose an Existing Image">
+            <select name="picSelect">
+            ${renderPictures()}
+            </select>
             <input type="submit" float='left' style="font-size: large" value="Create Case">
             <button float='right' style="font-size: large" class='return-to-menu'>Return to Main Menu</button>
             </form>  
@@ -195,6 +198,15 @@ function addBundleListener(){
         })
     })
 }
+
+function renderPictures(){
+
+    let html = "";
+    PICS.forEach(pic => {
+        html += `<option value="${pic}">${pic}</option>`;
+    })
+   return html
+}
 function renderDeleteBundleList(){
     let html = "";
     BUNDLES.forEach(bun => {
@@ -261,6 +273,12 @@ function addCreateFormListener(){
     createForm.addEventListener("submit", event => {
         event.preventDefault();
         const descriptions = [], points = [], alerts = [];
+        let pic;
+        if (event.target.url.value.length > 0){
+            pic = event.target.url.value
+        } else {
+            pic = event.target.picSelect.value
+        }
         event.target.descriptions.forEach(description => descriptions.push(description.value)),
         event.target.points.forEach(point => points.push(point.value)),
         event.target.alerts.forEach(alert => alerts.push(alert.value))
@@ -272,6 +290,7 @@ function addCreateFormListener(){
                 rating_boost: event.target.boost.value,
                 disclosure: event.target.disclosure.value,
                 creator_id: CURRENT_USER.id,
+                picture: pic,
                 descriptions: descriptions,
                 all_points: points,
                 alerts: alerts
@@ -283,6 +302,7 @@ function addCreateFormListener(){
         .then(cas => {
             CASES.push(cas.data);
             OPTIONS = CASES.map(cas => cas.attributes.options).flat();
+            PICS = CASES.map(cas => cas.attributes.picture);
             MAIN.style = 'margin-top: 40px;'
             MAIN.innerHTML = ''
             fetchCurrentUser(renderCreateForm);
@@ -296,7 +316,9 @@ function fetchCases(){
     .then(cases => {
         CASES = cases.data;
         OPTIONS = CASES.map(cas => cas.attributes.options).flat();
-        
+
+        const allpics = CASES.map(cas => cas.attributes.picture);
+        PICS = [...new Set(allpics)]
     })
 }
 
