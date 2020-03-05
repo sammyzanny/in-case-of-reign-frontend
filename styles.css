@@ -71,6 +71,10 @@ button {
     font-size: x-large;
 }
 
+.delete-btn {
+    font-size: small;
+}
+
 .column {
     float: left;
     width: 50%;
