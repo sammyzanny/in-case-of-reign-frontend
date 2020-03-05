@@ -342,6 +342,7 @@ function renderCases(selectedCases){
 function renderCase(cas){
     COUNTER++;
     MAIN.innerHTML = `
+    <img style="width: 200px; height: auto;) id="case-pic" src=${cas.attributes.picture}>
     <h2>${cas.attributes.title}</h2>
     <p>${cas.attributes.disclosure}</p><br>
     ${renderOptions(cas)}`
@@ -415,7 +416,7 @@ function renderLoseScreen() {
 function addStartOverListener() {
     let startOver = document.getElementById('start-over-button')
     startOver.addEventListener('click', function(e) {
-        MAIN.style = 'margin-top: 40px;'
+        MAIN.style = 'margin-top: 10px;'
         const ratDiv = document.querySelector("#rating");
         ratDiv.style = 'background: none'
         ratDiv.innerHTML = ``;
