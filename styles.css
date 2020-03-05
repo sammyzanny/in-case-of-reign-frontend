@@ -22,7 +22,7 @@ html {
 
 #center-field {
     border-radius: 25px;
-    margin-top: 40px;
+    margin-top: 10px;
     margin-left: auto;
     margin-right: auto;
     background: radial-gradient(rgba(240, 223, 148, 1), rgba(240, 223, 148, .85));
