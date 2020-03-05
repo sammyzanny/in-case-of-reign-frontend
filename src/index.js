@@ -1,4 +1,4 @@
-let CURRENT_USER, COUNTER, CASES, selectedCases, RATING , OPTIONS, BUNDLES;
+let CURRENT_USER, COUNTER, CASES, selectedCases, RATING , OPTIONS, BUNDLES, OPTIONS_COUNTER;
 const LOG_IN_FORM = document.querySelector(".create-user-form");
 const MAIN = document.querySelector("#center-field");
 
@@ -72,6 +72,7 @@ function addCreativeListener(){
     })
 }
 function renderCreateForm(){
+    OPTIONS_COUNTER = 3;
     MAIN.style.width = '1200px'
     MAIN.style.height = '450px'
     MAIN.style.marginTop = '0px'
@@ -79,16 +80,23 @@ function renderCreateForm(){
     <div class="column">
         <h2 style="margin-top: 0px; margin-bottom: 8px;">Create A New Case</h2>
         <form id="case-form">
-            <input type="text" name="title" float='left' style="width: 365px; font-size: small; padding: 0px; margin-bottom: 4px;" placeholder="Case Title">
+
+           <input type="text" name="title" float='left' style="width: 365px; font-size: small; padding: 0px; margin-bottom: 4px;" placeholder="Case Title">
             <input type="number" name="boost" float='right' style="width: 120px; font-size: small; padding: 0px;" placeholder="Rating Boost"><br>
             <textarea style="resize: none; margin: 0px; width: 475px; height: 45px; font-size: small; padding: 0px; background-color: rgb(240, 223, 148);" name="disclosure" placeholder="Case Disclosure"></textarea><br>
-            <input type="text" placeholder="Option 1" float='left' style="width: 365px; font-size: small; padding: 0px;" name="option1">
-            <input type="number" placeholder="Rating Effect" float='right' style="width: 120px; font-size: small; padding: 0px;" name="points1">
-            <input type="text" placeholder="Option 2" float='left' style="width: 365px; font-size: small; padding: 0px;" name="option2">
-            <input type="number" placeholder="Rating Effect" float='right' style="width: 120px; font-size: small; padding: 0px;" name="points2"><br><br>
-            <input type="submit" style='font-size: large' float='left' value="Create Case">
-            <button style='font-size: large' float='right' class='return-to-menu'>Return to Main Menu</button>
-        </form>  
+            <div id="options">
+                <input type="text" placeholder="Option 1" float='left' style="width: 365px; font-size: small; padding: 0px;" name="descriptions">
+                <input type="number" placeholder="Rating Effect" float='right' style="width: 120px; font-size: small; padding: 0px;" name="points">
+                <input type="text" placeholder="Consequence" name="alerts">
+                <input type="text" placeholder="Option 2" float='left' style="width: 365px; font-size: large;" name="descriptions">
+                <input type="number" placeholder="Rating Effect" float='right' style="width: 120px;" name="points"><br><br>
+                <input type="text" placeholder="Consequence" name="alerts">
+            </div>
+            <button id="add-options">Add Options</button><br><br>
+            <input type="submit" float='left' style="font-size: large" value="Create Case">
+            <button float='right' style="font-size: large" class='return-to-menu'>Return to Main Menu</button>
+            </form>  
+
         </div>
         <div class="column" style='height: 225px'>
         <h2 style='margin-top: 0px; margin-bottom: 8px'>Delete Your Cases</h2>
@@ -118,6 +126,21 @@ function renderCreateForm(){
         addDeleteListener();
         addBundleListener();
         addDeleteBundleListener();
+        addOptionsListener();
+}
+
+function addOptionsListener(){
+    const optionsBtn = document.querySelector("#add-options");
+    const optionsDiv = document.querySelector("#options")
+    optionsBtn.addEventListener("click", event => {
+        event.preventDefault();
+        optionsDiv.innerHTML += `
+        <input type="text" placeholder="Option ${OPTIONS_COUNTER}" float='left' style="width: 365px; font-size: large;" name="descriptions">
+        <input type="number" placeholder="Rating Effect" float='right' style="width: 120px;" name="points">
+        <input type="text" placeholder="Consequence" name="alerts">
+        `.trim();
+        OPTIONS_COUNTER++;
+    })
 }
 
 function addBundleListener(){
@@ -165,7 +188,9 @@ function addBundleListener(){
 function renderDeleteBundleList(){
     let html = "";
     BUNDLES.forEach(bun => {
-        html += `<li style='margin-bottom: 5px'><p style='float: left; margin-top: 0px; margin-bottom: 0px'>${bun.theme}</p><button style='float: right' class="delete-btn" data-id="${bun.id}">Remove Bundle</button></li>`
+        if (bun.id != 4){
+            html += `<li style='margin-bottom: 5px'><p style='float: left; margin-top: 0px; margin-bottom: 0px'>${bun.theme}</p><button style='float: right' class="delete-btn" data-id="${bun.id}">Remove Bundle</button></li>`
+        }
     })
     return html
 }
@@ -225,6 +250,10 @@ function addCreateFormListener(){
     const createForm = document.querySelector("#case-form");
     createForm.addEventListener("submit", event => {
         event.preventDefault();
+        const descriptions = [], points = [], alerts = [];
+        event.target.descriptions.forEach(description => descriptions.push(description.value)),
+        event.target.points.forEach(point => points.push(point.value)),
+        event.target.alerts.forEach(alert => alerts.push(alert.value))
         const reqObj = {
             method: "POST",
             headers: {"Content-Type": "application/json"},
@@ -233,10 +262,9 @@ function addCreateFormListener(){
                 rating_boost: event.target.boost.value,
                 disclosure: event.target.disclosure.value,
                 creator_id: CURRENT_USER.id,
-                description1: event.target.option1.value,
-                points1: event.target.points1.value,
-                description2: event.target.option2.value,
-                points2: event.target.points2.value
+                descriptions: descriptions,
+                all_points: points,
+                alerts: alerts
             })
         }
 
@@ -244,6 +272,7 @@ function addCreateFormListener(){
         .then(resp => resp.json())
         .then(cas => {
             CASES.push(cas.data);
+            OPTIONS = CASES.map(cas => cas.attributes.options).flat();
             MAIN.style = 'margin-top: 40px;'
             MAIN.innerHTML = ''
             fetchCurrentUser(renderPlayOrCreate);
@@ -303,14 +332,19 @@ function addPlayListener() {
         }
         const selectedIds = getSelectValues(caseSelection)
 
-         const selectedBundles = [];
-         if (event.target.bundles.length) {
-         event.target.bundles.forEach(bundle => {
-             if (bundle.checked){
-                 selectedBundles.push(BUNDLES.find(bund => {return bund.id == bundle.dataset.id}))
-             }
-        })
-    }
+        const selectedBundles = [];
+        if (event.target.bundles.length){
+            event.target.bundles.forEach(bundle => {
+                if (bundle.checked){
+                    selectedBundles.push(BUNDLES.find(bund => {return bund.id == bundle.dataset.id}))
+                }
+            })
+        } else {
+            if (event.target.bundles.checked){
+                selectedBundles.push(BUNDLES.find(bund => {return bund.id == event.target.bundles.dataset.id}))
+            }
+        }
+    
 
         selectedBundles.forEach(bundle => {
             bundle.cases.forEach(cas => {
