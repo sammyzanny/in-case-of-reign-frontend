@@ -90,10 +90,10 @@ function renderCreateForm(){
                 <input type="number" placeholder="Rating Effect" float='right' style="width: 120px;" name="points"><br><br>
                 <input type="text" placeholder="Consequence" name="alerts">
             </div>
+            <button id="add-options">Add Options</button><br><br>
             <input type="submit" float='left' value="Create Case">
             <button float='right' class='return-to-menu'>Return to Main Menu</button>
             </form>  
-            <button id="add-options">Add Options</button>
         </div>
         <div class="column" style='height: 361px'>
         <h1>Delete Your Cases</h1>
@@ -130,6 +130,7 @@ function addOptionsListener(){
     const optionsBtn = document.querySelector("#add-options");
     const optionsDiv = document.querySelector("#options")
     optionsBtn.addEventListener("click", event => {
+        event.preventDefault();
         optionsDiv.innerHTML += `
         <input type="text" placeholder="Option ${OPTIONS_COUNTER}" float='left' style="width: 365px; font-size: large;" name="descriptions">
         <input type="number" placeholder="Rating Effect" float='right' style="width: 120px;" name="points">
@@ -184,7 +185,9 @@ function addBundleListener(){
 function renderDeleteBundleList(){
     let html = "";
     BUNDLES.forEach(bun => {
-        html += `<li><h2>${bun.theme}</h2><button class="delete-btn" data-id="${bun.id}">Remove Bundle</button></li>`
+        if (bun.id != 4){
+            html += `<li><h2>${bun.theme}</h2><button class="delete-btn" data-id="${bun.id}">Remove Bundle</button></li>`
+        }
     })
     return html
 }
