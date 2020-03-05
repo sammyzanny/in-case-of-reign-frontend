@@ -76,7 +76,7 @@ function addCreativeListener(){
 function renderCreateForm(){
     OPTIONS_COUNTER = 3;
     MAIN.style.width = '1200px'
-    MAIN.style.height = '450px'
+    MAIN.style.height = '445px'
     MAIN.style.marginTop = '0px'
     MAIN.innerHTML = `<div style="height: 225px; margin-bottom: 10px;" class="row">
     <div class="column">
@@ -113,7 +113,9 @@ function renderCreateForm(){
                 <h2 style='margin-top: 0px; margin-bottom: 8px'>Bundle Your Cases With a Theme</h2>
                 <form id="bundle-form">
                     <input type="text" style="width: 365px; font-size: small; padding: 0px; margin-bottom: 4px;" placeholder="Bundle Theme" name="theme"><br>
-                    ${renderCaseBoxes()}<br><br>
+                    <div style='height: 15vh; overflow: scroll;'>
+                    ${renderCaseCheckBoxes()}
+                    </div><br>
                     <input type="submit" style='font-size: large' value="Bundle">
                 </form>
             </div>
@@ -153,21 +155,26 @@ function addBundleListener(){
         e.preventDefault()
 
 
-        function getSelectValues(select) {
-            let result = [];
-            let options = select && select.options;
-            let opt;
-          
-            for (let i=0, iLen=options.length; i<iLen; i++) {
-              opt = options[i];
-          
-              if (opt.selected) {
-                result.push(opt.value || opt.text);
-              }
+        const selectedIds = []
+        const selectedBundles = [];
+        if (event.target.cases.length){
+            event.target.cases.forEach(cas => {
+                if (cas.checked){
+                    selectedBundles.push(CASES.find(ca => {return ca.id == cas.dataset.id}))
+                }
+            })
+        } else {
+            if (event.target.cases.checked){
+                selectedBundles.push(CASES.find(ca => {return ca.id == event.target.cases.dataset.id}))
             }
-            return result;
         }
-        const selectedIds = getSelectValues(caseSelection)
+    
+
+        selectedBundles.forEach(cas => {
+                selectedIds.push(cas.id.toString())
+        })
+
+        
 
         const reqObj = {
             method: "POST",
@@ -316,7 +323,7 @@ function renderCaseCheckBoxes(){
     let html = ""
 
     CASES.forEach((cas) => {
-        html += `<label style='font-size: larger' for="case${cas.id}">${cas.attributes.title}</label><input id="case${cas.id}" data-id="${cas.id}" type="checkbox" name="case"><br>`
+        html += `<label style='font-size: larger' for="case${cas.id}">${cas.attributes.title}</label><input id="case${cas.id}" data-id="${cas.id}" type="checkbox" name="cases"><br>`
     })
 
     return html
@@ -412,7 +419,7 @@ function addButtonListeners(){
             renderCases(selectedCases);
 
         } else if (event.target.className === "return-to-menu"){
-            MAIN.style = 'margin-top: 40px;'
+            MAIN.style = 'margin-top: 10px;'
             MAIN.innerHTML = ''
             fetch("http://localhost:3000/cases")
             .then(resp => resp.json())
