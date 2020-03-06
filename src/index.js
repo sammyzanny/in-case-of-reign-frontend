@@ -77,7 +77,7 @@ function renderCreateForm(){
     MAIN.style.width = '1200px'
     MAIN.style.height = '445px'
     MAIN.style.marginTop = '0px'
-    MAIN.innerHTML = `<div style="height: 225px; margin-bottom: 10px;" class="row">
+    MAIN.innerHTML = `<div style="height: 225px; margin-bottom: 10px; margin-left: 80px;" class="row">
     <div class="column">
         <h2 style="margin-top: 0px; margin-bottom: 4px;">Create A New Case</h2>
 
@@ -112,7 +112,7 @@ function renderCreateForm(){
         </ul>
         </div>
         </div>
-        <div style="height: 225px;" class="row">
+        <div style="height: 225px; margin-left: 80px;" class="row">
             <div class="column">
                 <h2 style='margin-top: 0px; margin-bottom: 8px'>Bundle Your Cases With a Theme</h2>
                 <form id="bundle-form">
@@ -332,7 +332,7 @@ function fetchBundles(){
 }
 
 function renderCaseBoxes(){
-    let html = "<select id='multiselect' multiple>"
+    let html = `<select style="width: 60%;" id='multiselect' multiple>`
 
     CASES.forEach((cas) => {
         html += `<option id="case${cas.id}" name="case" value="${cas.id}">${cas.attributes.title}</option>`
