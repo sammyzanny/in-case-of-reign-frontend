@@ -79,18 +79,18 @@ function renderCreateForm(){
     MAIN.style.marginTop = '0px'
     MAIN.innerHTML = `<div style="height: 225px; margin-bottom: 10px;" class="row">
     <div class="column">
-        <h2 style="margin-top: 0px; margin-bottom: 8px;">Create A New Case</h2>
-        <div style="max-height: 26vh; overflow: scroll;">
-        <form id="case-form">
+        <h2 style="margin-top: 0px; margin-bottom: 4px;">Create A New Case</h2>
 
-           <input type="text" name="title" float='left' style="width: 365px; font-size: small; padding: 0px; margin-bottom: 4px;" placeholder="Case Title">
+        <form id="case-form">
+        <div style="height: 169px; overflow: scroll; border-style: double; border-color: black;">
+           <input type="text" name="title" float='left' style="width: 365px; font-size: small; padding: 0px; margin-bottom: 4px;" placeholder="Case Title" required minlength="1">
             <input type="number" name="boost" float='right' style="width: 120px; font-size: small; padding: 0px;" placeholder="Rating Boost"><br>
-            <textarea style="resize: none; margin: 0px; width: 475px; height: 45px; font-size: small; padding: 0px; background-color: rgb(240, 223, 148);" name="disclosure" placeholder="Case Disclosure"></textarea><br>
+            <textarea style="resize: none; margin: 0px; width: 475px; height: 45px; font-size: small; padding: 0px; background-color: rgb(240, 223, 148);" name="disclosure" placeholder="Case Disclosure" required minlength="1"></textarea><br>
             <div id="options">
-                <input type="text" placeholder="Option 1" float='left' style="width: 365px; font-size: small; padding: 0px;" name="descriptions">
+                <input type="text" placeholder="Option 1" float='left' style="width: 365px; font-size: small; padding: 0px;" name="descriptions" required minlength="1">
                 <input type="number" placeholder="Rating Effect" float='right' style="width: 120px; font-size: small; padding: 0px;" name="points">
                 <input type="text" placeholder="Consequence" style="width: 365px; font-size: small; padding: 0px;" name="alerts">
-                <input type="text" placeholder="Option 2" float='left' style="width: 365px; font-size: small; padding: 0px;" name="descriptions">
+                <input type="text" placeholder="Option 2" float='left' style="width: 365px; font-size: small; padding: 0px;" name="descriptions" required minlength="1">
                 <input type="number" placeholder="Rating Effect" float='right' style="width: 120px; font-size: small; padding: 0px;" name="points">
                 <input type="text" placeholder="Consequence" style="width: 365px; font-size: small; padding: 0px;" name="alerts">
             </div>
@@ -99,14 +99,15 @@ function renderCreateForm(){
             <select name="picSelect">
             ${renderPictures()}
             </select>
+            </div>
             <input type="submit" float='left' style="font-size: large" value="Create Case">
             <button float='right' style="font-size: large" class='return-to-menu'>Return to Main Menu</button>
             </form>  
-            </div>
+
         </div>
         <div class="column" style='height: 225px'>
-        <h2 style='margin-top: 0px; margin-bottom: 8px'>Delete Your Cases</h2>
-        <ul style='height: 26vh; width: 220px; overflow: scroll; margin-top: 0px; margin-bottom: 0px; margin-left: 150px' id="delete-list">
+        <h2 style='margin-top: 0px; margin-bottom: 4px'>Delete Your Cases</h2>
+        <ul style='height: 169px; width: 250px; overflow: scroll; margin-top: 0px; margin-bottom: 0px; margin-left: 150px; border-style: double; border-color: black;' id="delete-list">
             ${renderDeleteList()}
         </ul>
         </div>
@@ -115,8 +116,8 @@ function renderCreateForm(){
             <div class="column">
                 <h2 style='margin-top: 0px; margin-bottom: 8px'>Bundle Your Cases With a Theme</h2>
                 <form id="bundle-form">
-                    <input type="text" style="width: 365px; font-size: small; padding: 0px; margin-bottom: 4px;" placeholder="Bundle Theme" name="theme"><br>
-                    <div style='height: 15vh; overflow: scroll;'>
+                    <input type="text" style="width: 365px; font-size: small; padding: 0px; margin-bottom: 4px;" placeholder="Bundle Theme" name="theme" required minlength="1"><br>
+                    <div style='height: 15vh; overflow: scroll; border-style: double; border-color: black;'>
                     ${renderCaseCheckBoxes()}
                     </div><br>
                     <input type="submit" style='font-size: large' value="Bundle">
@@ -124,7 +125,7 @@ function renderCreateForm(){
             </div>
             <div class="column">
                 <h2 style='margin-top: 0px; margin-bottom: 8px'>Remove Bundles</h2>
-                <ul style='height: 24vh; width: 220px; overflow: scroll; margin-top: 0px; margin-bottom: 0px; margin-left: 150px' id="delete-bundle-list">
+                <ul style='height: 24vh; width: 250px; overflow: scroll; margin-top: 0px; margin-bottom: 0px; margin-left: 150px; border-style: double; border-color: black;' id="delete-bundle-list">
                 ${renderDeleteBundleList()}
                 </ul>
             </div>
