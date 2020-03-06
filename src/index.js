@@ -211,7 +211,7 @@ function renderPictures(){
 function renderDeleteBundleList(){
     let html = "";
     BUNDLES.forEach(bun => {
-        if (bun.id != 4){
+        if (bun.theme != "Default (Medieval)" && bun.theme != "Ultimate Sacrifice" ){
             html += `<li style='margin-bottom: 5px'><p style='float: left; margin-top: 0px; margin-bottom: 0px'>${bun.theme}</p><button style='float: right' class="delete-btn" data-id="${bun.id}">Remove Bundle</button><br></li>`
         }
     })
