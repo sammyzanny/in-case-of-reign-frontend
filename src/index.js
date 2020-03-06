@@ -75,7 +75,7 @@ function addCreativeListener(){
 function renderCreateForm(){
     OPTIONS_COUNTER = 3;
     MAIN.style.width = '1200px'
-    MAIN.style.height = '445px'
+    MAIN.style.height = 'auto'
     MAIN.style.marginTop = '0px'
     MAIN.innerHTML = `<div style="height: 225px; margin-bottom: 10px; margin-left: 80px;" class="row">
     <div class="column">
