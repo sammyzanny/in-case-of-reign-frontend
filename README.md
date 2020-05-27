@@ -52,6 +52,6 @@ Here's what to know when building a new case.  The title and disclosure will be 
 
 Finally, creating a new bundle of cases is easy.  Just name the bundle, check the boxes of the cases you want to include, and click Bundle!
 
-### Author
+### Authors
 
 Sam Zandi, Matthew Gizzi ([@m-gizzi](https://github.com/m-gizzi))
