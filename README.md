@@ -4,7 +4,7 @@ Quick links:
 
 Backend repo: https://github.com/sammyzanny/in-case-of-reign-backend
 
-Demo: https://www.youtube.com/watch?v=s_1Rguesv4E
+Demo: https://www.youtube.com/watch?v=FMQVXkNX-xU
 
 Live Site: https://in-case-of-reign.herokuapp.com/
 
